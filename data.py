@@ -16,7 +16,6 @@ def indiv_dayclass(date, holidays):
 
 def dayclass(t, holidays, min_timestamp=1381694400):
     today = datetime.datetime.fromtimestamp(t + min_timestamp)
-    print(today, today.weekday())
     yesterday = today - datetime.timedelta(1)
     return indiv_dayclass(yesterday, holidays) + indiv_dayclass(today, holidays)
     
