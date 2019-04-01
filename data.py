@@ -1,3 +1,26 @@
+import datetime
+
+
+def holiday_list():
+    holidays = []
+    with open('joursferies.txt', 'r') as f:
+        for line in f:
+            holidays.append(line[:-1])
+    return holidays
+
+def indiv_dayclass(date, holidays):
+    datestring = '{:02d}/{:02d}/{}'.format(date.day, date.month, date.year)
+    if date.weekday() == 5 or date.weekday() == 6 or datestring in holidays:
+        return 'H'
+    return 'W'
+
+def dayclass(t, holidays, min_timestamp=1381694400):
+    today = datetime.datetime.fromtimestamp(t + min_timestamp)
+    print(today, today.weekday())
+    yesterday = today - datetime.timedelta(1)
+    return indiv_dayclass(yesterday, holidays) + indiv_dayclass(today, holidays)
+    
+
 def separate_x_res(N):
     is_valid = [False for i in range(N)]
     for m in range(12):

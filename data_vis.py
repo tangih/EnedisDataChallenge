@@ -63,7 +63,8 @@ def add(X, x):
     if X.shape[0] == 0:
         return x
     else:
-        return np.concatenate((X, x), axis=0)
+        return np.concatenate((X, x), axis=0)    
+    
 
 def plot_dayclass(x_train, y_train, x_labels, x_id, y_id, min_id, max_id, min_timestamp=1381694400):
     
@@ -71,18 +72,23 @@ def plot_dayclass(x_train, y_train, x_labels, x_id, y_id, min_id, max_id, min_ti
         x, y = x_train[k*48+min_id:max_id:48*7], y_train[k*48+min_id:max_id:48*7]
         t = x_train[k*48+min_id, 1]
         day = datetime.datetime.fromtimestamp(t + min_timestamp).weekday()
+        day_labels = ['HH', 'HW', 'WH', 'WW']
         if day == 0:
-            X[1] = add(X[1], x)
-            Y[1] = add(Y[1], y)
+            id = day_labels.index('HW')
+            X[id] = add(X[id], x)
+            Y[id] = add(Y[id], y)
         elif day == 1 or day == 2 or day ==3 or day == 4:
-            X[3] = add(X[3], x)
-            Y[3] = add(Y[3], y)
+            id = day_labels.index('WW')
+            X[id] = add(X[id], x)
+            Y[id] = add(Y[id], y)
         elif day == 5:
-            X[2] = add(X[2], x)
-            Y[2] = add(Y[2], y)
+            id = day_labels.index('WH')
+            X[id] = add(X[id], x)
+            Y[id] = add(Y[id], y)
         elif day == 6:
-            X[0] = add(X[0], x)
-            Y[0] = add(Y[0], y)
+            id = day_labels.index('HH')
+            X[id] = add(X[id], x)
+            Y[id] = add(Y[id], y)
 
     for k in range(4):
         ind = np.argsort(X[k][:, 0])
@@ -91,7 +97,6 @@ def plot_dayclass(x_train, y_train, x_labels, x_id, y_id, min_id, max_id, min_ti
 
     # vis.plot_all(X, Y, x_labels, filename='plots_by_class.png')
 
-    day_labels = ['HH', 'HW', 'WH', 'WW']
     for k in range(4):
         plot_series(X[k][:, x_id], Y[k][:, 0], label_a=x_labels[x_id], label_b='YRES{}'.format(y_id), label=day_labels[k])
     plt.legend(loc='best')
