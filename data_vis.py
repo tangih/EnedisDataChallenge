@@ -3,7 +3,11 @@ import matplotlib.pyplot as plt
 import time
 import datetime
 
-import data
+
+def timestamp2utc(t, min_timestamp=1381694400):
+    timestamp = t + min_timestamp
+    return datetime.datetime.fromtimestamp(timestamp).isoformat()
+
 
 def plot_series(A, B, label_a=None, label_b=None, label=None):
     ind = np.argsort(A)
@@ -17,17 +21,20 @@ def plot_series(A, B, label_a=None, label_b=None, label=None):
     else:
         plt.scatter(x, y, marker='+')
     
-def plot_time(t, X, label_x=None):
-    plt.plot(t, X)
+def plot_time(t, X, label_x=None, label_curve=None):
+    if label_curve is not None:
+        plt.plot(t, X, label=label_curve)
+    else:
+        plt.plot(t, X)
     min_t, max_t = min(t), max(t)
     if label_x is not None:
         plt.ylabel(label_x)
         plt.title('Temporal plot of {} between {} and {}'.format(label_x, 
-                                                                 data.timestamp2utc(min_t), 
-                                                                 data.timestamp2utc(max_t)))
+                                                                 timestamp2utc(min_t), 
+                                                                 timestamp2utc(max_t)))
     else:
-        plt.title('Temporal plot between {} and {}'.format(data.timestamp2utc(min_t), 
-                                                           data.timestamp2utc(max_t)))
+        plt.title('Temporal plot between {} and {}'.format(timestamp2utc(min_t), 
+                                                           timestamp2utc(max_t)))
         
 def plot_all(X, Y, x_labels, filename='plots.png'):
     columns = 22
