@@ -10,17 +10,13 @@ def convert(str):
     return float(str)
 
 
-def load_data(train_file_feat, train_file_label, test_file_feat, min_timestamp = 1381694400):
+def load_data(train_file_feat, train_file_label, min_timestamp = 1381694400):
     # load raw data
     x_train = []
     y_train = []
-    x_test = []
     with open(train_file_feat, 'r') as f:
         for line in f:
             x_train.append(line[:-1])
-    with open(test_file_feat, 'r') as f:
-        for line in f:
-            x_test.append(line[:-1])
     with open(train_file_label, 'r') as f:
         for line in f:
             y_train.append(line[:-1])
@@ -67,22 +63,26 @@ def load_data(train_file_feat, train_file_label, test_file_feat, min_timestamp =
     return x_res, y_res, x_com, y_com, labels
 
 
-def saveModel(model, savename):
+def saveModel(model, savename, verbose=False):
     # sauvegarde le modèle appris
     # serialize model to YAML
     model_yaml = model.to_yaml()
     with open(savename+".yaml", "w") as yaml_file:
         yaml_file.write(model_yaml)
-        print("Yaml Model ",savename,".yaml saved to disk")
+        if verbose:
+            print("Yaml Model ",savename,".yaml saved to disk", sep='')
     # serialize weights to HDF5
     model.save_weights(savename+".h5")
-    print("Weights ",savename,".h5 saved to disk")
+    if verbose:
+        print("Weights ",savename,".h5 saved to disk", sep='')
     
     
-def loadModel(savename):
+def loadModel(savename, verbose=False):
     with open(savename+".yaml", "r") as yaml_file:
         model = model_from_yaml(yaml_file.read())
-    print("Yaml Model ",savename,".yaml loaded ")
+    if verbose:
+        print("Yaml Model ",savename,".yaml loaded ", sep='')
     model.load_weights(savename+".h5")
-    print("Weights ",savename,".h5 loaded ")
+    if verbose:
+        print("Weights ",savename,".h5 loaded ", sep='')
     return model

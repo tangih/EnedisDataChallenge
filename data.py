@@ -37,3 +37,4 @@ def separate_x_com(n_com):
     k_sep = n_com * .9
     is_valid = np.arange(n_com) > k_sep
     return is_valid
+
