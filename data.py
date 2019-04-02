@@ -43,10 +43,12 @@ def separate_x_com(n_com):
 def create_features(x_train, min_timestamp=1381694400):
     holidays = holiday_list()
     day_labels = ['HH', 'HW', 'WH', 'WW']
+    prev_hours = [4, 6, 12, 24, 48]
+    gap = x_train[1, 1] - x_train[0, 1]
     n, m = x_train.shape
-    features = np.zeros((n, 30), dtype=np.float)
+    features = np.zeros((n, 35), dtype=np.float)
     for i in range(n):
-        vec = np.zeros(30, dtype=np.float)
+        vec = np.zeros(35, dtype=np.float)
         t = x_train[i, 1]
         dt = datetime.datetime.fromtimestamp(t + min_timestamp)
         weekday = dt.weekday()
@@ -59,6 +61,13 @@ def create_features(x_train, min_timestamp=1381694400):
         vec[12:25] = x_train[i][3:16]
         vec[25:28] = x_train[i][18:21]
         vec[28:30] = x_train[i][23:25]
+        # include temperatures from previous timestamps
+        for j in range(len(prev_hours)):
+            h = prev_hours[j]
+            if i-2*h >= 0 and x_train[i-2*h, 1] == 2*h*gap:
+                vec[30+j] = x_train[i-2*h, 19]
+            else:
+                vec[30+j] = x_train[i, 19]
         features[i] = vec
     return features
 

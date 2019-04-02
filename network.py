@@ -2,7 +2,7 @@ import numpy as np
 import tqdm
 
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Dropout
 
 
 def train_models(x_train, y_train, hh_train):
@@ -10,13 +10,17 @@ def train_models(x_train, y_train, hh_train):
     seed = 7
     np.random.seed(seed)
     batch_size = 32
-    n_epochs = 100
+    n_epochs = 200
+    n_in = x_train.shape[1]
     n_out = y_train.shape[1]
     for i in tqdm.tqdm_notebook(range(48)):
         models[i] = Sequential()
-        models[i].add(Dense(32, input_dim=30, kernel_initializer='normal', activation='relu'))
-        models[i].add(Dense(32, input_dim=32, kernel_initializer='normal', activation='relu'))
+        models[i].add(Dense(32, input_dim=n_in, kernel_initializer='normal', activation='relu'))
+        models[i].add(Dropout(0.25))
+        # models[i].add(Dense(32, input_dim=32, kernel_initializer='normal', activation='relu'))
+        # models[i].add(Dropout(0.25))
         models[i].add(Dense(16, input_dim=32, kernel_initializer='normal', activation='relu'))
+        models[i].add(Dropout(0.5))
         models[i].add(Dense(n_out, input_dim=16, kernel_initializer='normal'))
         models[i].compile(loss='mean_squared_error', optimizer='adam')
         ind = np.where(hh_train == i)[0]
