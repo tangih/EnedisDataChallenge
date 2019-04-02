@@ -21,11 +21,12 @@ def plot_series(A, B, label_a=None, label_b=None, label=None):
     else:
         plt.scatter(x, y, marker='+')
     
-def plot_time(t, X, label_x=None, label_curve=None):
+    
+def plot_time(t, X, label_x=None, label_curve=None, alpha=1):
     if label_curve is not None:
-        plt.plot(t, X, label=label_curve)
+        plt.plot(t, X, label=label_curve, alpha=alpha)
     else:
-        plt.plot(t, X)
+        plt.plot(t, X, alpha=alpha)
     min_t, max_t = min(t), max(t)
     if label_x is not None:
         plt.ylabel(label_x)
@@ -35,6 +36,7 @@ def plot_time(t, X, label_x=None, label_curve=None):
     else:
         plt.title('Temporal plot between {} and {}'.format(timestamp2utc(min_t), 
                                                            timestamp2utc(max_t)))
+        
         
 def plot_all(X, Y, x_labels, filename='plots.png'):
     columns = 22
@@ -56,8 +58,6 @@ def plot_all(X, Y, x_labels, filename='plots.png'):
             axes.set_ylabel(label_y)
     fig.savefig(filename)
     
-X = [np.array([]), np.array([]), np.array([]), np.array([])]  # HH, HW, WH, WW
-Y = [np.array([]), np.array([]), np.array([]), np.array([])]
 
 def add(X, x):
     if X.shape[0] == 0:
@@ -67,7 +67,9 @@ def add(X, x):
     
 
 def plot_dayclass(x_train, y_train, x_labels, x_id, y_id, min_id, max_id, min_timestamp=1381694400):
-    
+    X = [np.array([]), np.array([]), np.array([]), np.array([])]  # HH, HW, WH, WW
+    Y = [np.array([]), np.array([]), np.array([]), np.array([])]
+
     for k in range(7):
         x, y = x_train[k*48+min_id:max_id:48*7], y_train[k*48+min_id:max_id:48*7]
         t = x_train[k*48+min_id, 1]
@@ -99,4 +101,15 @@ def plot_dayclass(x_train, y_train, x_labels, x_id, y_id, min_id, max_id, min_ti
 
     for k in range(4):
         plot_series(X[k][:, x_id], Y[k][:, 0], label_a=x_labels[x_id], label_b='YRES{}'.format(y_id), label=day_labels[k])
+    plt.legend(loc='best')
+    
+    
+def plot_train_val(x, y, y_id, is_valid, x_labels):
+    n = x.shape[0]
+    print('Proportion of the validation set: {:.1f}%'.format(100 * np.sum(is_valid)/n))
+    # plot training/validation set
+    ind = np.where(is_valid)[0]
+    plot_time(x[ind, 1], y[ind, 0], label_curve='validation')
+    ind = np.where([not is_valid[i] for i in range(n)])[0]
+    plot_time(x[ind, 1], y[ind, 0], label_curve='training')
     plt.legend(loc='best')

@@ -65,3 +65,24 @@ def load_data(train_file_feat, train_file_label, test_file_feat, min_timestamp =
         if i >= min_i:
             y_com[i-min_i] = np.array([convert(x) for x in [y_train[i][j] for j in com_ind]])
     return x_res, y_res, x_com, y_com, labels
+
+
+def saveModel(model, savename):
+    # sauvegarde le modèle appris
+    # serialize model to YAML
+    model_yaml = model.to_yaml()
+    with open(savename+".yaml", "w") as yaml_file:
+        yaml_file.write(model_yaml)
+        print("Yaml Model ",savename,".yaml saved to disk")
+    # serialize weights to HDF5
+    model.save_weights(savename+".h5")
+    print("Weights ",savename,".h5 saved to disk")
+    
+    
+def loadModel(savename):
+    with open(savename+".yaml", "r") as yaml_file:
+        model = model_from_yaml(yaml_file.read())
+    print("Yaml Model ",savename,".yaml loaded ")
+    model.load_weights(savename+".h5")
+    print("Weights ",savename,".h5 loaded ")
+    return model
