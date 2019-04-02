@@ -113,3 +113,20 @@ def plot_train_val(x, y, y_id, is_valid, x_labels):
     ind = np.where([not is_valid[i] for i in range(n)])[0]
     plot_time(x[ind, 1], y[ind, 0], label_curve='training')
     plt.legend(loc='best')
+
+def score(y_pred, y_gt, plot=False, x=None, id_valid=None):
+    se = (y_pred - y_gt) ** 2
+    mean_se = np.mean(se, axis=0)
+    n_out = y_pred.shape[1]
+    for i in range(n_out):
+        print('SE for Y{}: {:.4f}'.format(i, mean_se[i]))
+    print('MSE RES: {:.5f}'.format(np.mean(mean_se)))
+    print('Mean relative error: {:.2f}%'.format(np.mean(mean_se / np.mean(y_gt, axis=0)) * 100))
+
+    if plot:
+        plt.figure(figsize=(15, 5))
+        for i in range(n_out):
+            t = x[id_valid, 1]
+            plot_time(t[:500], np.log(se[:500, i] / 1e-5), label_x='log MSE', label_curve=str(i))
+        plt.legend(loc='best')
+        plt.show()

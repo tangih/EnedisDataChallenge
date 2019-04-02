@@ -10,7 +10,7 @@ def convert(str):
     return float(str)
 
 
-def load_data(train_file_feat, train_file_label, min_timestamp = 1381694400):
+def load_data(train_file_feat, train_file_label, min_timestamp=1381694400):
     # load raw data
     x_train = []
     y_train = []
@@ -61,6 +61,36 @@ def load_data(train_file_feat, train_file_label, min_timestamp = 1381694400):
         if i >= min_i:
             y_com[i-min_i] = np.array([convert(x) for x in [y_train[i][j] for j in com_ind]])
     return x_res, y_res, x_com, y_com, labels
+
+
+def load_test(test_file_feat, min_timestamp=1381694400):
+    x_test = []
+    with open(test_file_feat, 'r') as f:
+        for line in f:
+            x_test.append(line[:-1])
+    col_names = x_test[0].split(',')
+    x_test = [line.split(',') for line in x_test[1:]]
+
+    # convert data into numpy array
+    N = len(x_test)
+    data = np.zeros((N, 25))
+    labels = ['IDS', 'Timestamp']
+    for j in range(3, len(col_names)):
+        labels.append(col_names[j])
+    for i in tqdm.tqdm_notebook(range(N), 'Loading test data:'):
+        row = []
+        assert(len(x_test[i]) == 26)
+        for j in range(26):
+            if j == 1:
+                # convert UTC time into translated timestamp
+                timestamp = time.mktime(datetime.datetime.strptime(x_test[i][1], '%d/%m/%Y %H:%M').timetuple())
+                row.append(timestamp - min_timestamp)
+            elif j == 0 or j >= 3:
+                row.append(convert(x_test[i][j]))
+        
+        data[i] = np.array(row)
+    return data, x_test
+
 
 
 def saveModel(model, savename, verbose=False):
